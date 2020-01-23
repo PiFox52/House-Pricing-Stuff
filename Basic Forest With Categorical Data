@@ -37,3 +37,17 @@ print(mean_absolute_error(val_y,predictions))
 #TestData
 
 test_X = test_data[features + catergorical]
+
+test_label_X = test_X.copy()
+test_encoder = LabelEncoder()
+for col in catergorical:
+    test_label_X[col] = test_encoder.fit_transform(test_X[col].astype(str))
+
+test_imputer = SimpleImputer()
+test_imputed_X = pd.DataFrame(test_imputer.fit_transform(test_label_X))
+
+test_Predictions = forestModel.predict(test_imputed_X)
+
+output = pd.DataFrame({'Id': test_data.Id,
+                     'SalePrice': test_Predictions})
+output.to_csv('submission.csv', index=False)
